@@ -1,0 +1,44 @@
+with "rcl";
+
+project Ada_Project is
+
+   for Source_Dirs use ("src");
+
+   for Languages use ("Ada");
+
+   for Object_Dir  use "obj";
+   for Exec_Dir    use "bin";
+   for Library_Dir use "lib";
+
+   for Create_Missing_Dirs use "True";
+
+   for Main use (
+                 "prj-main.adb"
+                );
+
+   package Builder is
+      for Switches ("ada") use ("-j0", "-g");
+   end Builder;
+
+   package Compiler is
+      for Switches ("ada") use ("-gnatVa", 
+                                "-gnatwa", 
+                                "-g", 
+                                "-O2", 
+                                "-gnata",
+                                "-gnato",
+                                "-fstack-check");
+
+      for Switches ("C") use ("-Wall", 
+                              "-Wextra", 
+                              "-Wpedantic");
+
+      --  Silence irrelevant warnings on automatic bindings
+      for Switches ("rclx-*.ads") use Compiler'Switches ("ada") & ("-gnatwU");
+   end Compiler;
+
+   package Binder is
+      for Switches ("ada") use ("-Es"); -- Symbolic backtraces
+   end Binder;
+
+end Ada_Project;
